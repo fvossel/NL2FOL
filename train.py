@@ -1,0 +1,22 @@
+import os
+os.environ["HF_HOME"] = "<Directory for Model Cache>"
+os.environ["TMPDIR"] = "<Directory for Temp Files>"
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+import argparse
+from utils.modelloader import initialize_model_and_tokenizer_for_training
+from utils.datasetloader import load_datasets_for_training
+from utils.training import train
+
+
+def main(args):
+    model, tokenizer = initialize_model_and_tokenizer_for_training(args.model_name, ft_setting=args.ft_settings)
+    train_dataset, validation_dataset = load_datasets_for_training(args.model_name, args.ft_settings, tokenizer)
+    train(model, args.model_name, args.ft_settings, train_dataset, validation_dataset)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Training Script for NL2FOL")
+    parser.add_argument('--model_name', type=str, required=True, help='Name of the pre-trained model')
+    parser.add_argument('--ft_settings', type=str, required=True, help='Fine-tuning settings')
+    args = parser.parse_args()
+    main(args)
