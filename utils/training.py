@@ -297,7 +297,7 @@ def train(model, model_name: str, ft_setting: FT_SETTINGS_TYPE, train_dataset, v
     output_dir = ""
     output_model_path = ""
     if model_name in [T5_BASE_CURICULLUM_STEP2, T5_BASE_CURICULLUM_STEP3, T5_3B_CURICULLUM_STEP2, T5_3B_CURICULLUM_STEP3, FLAN_T5_XXL_CURICULLUM_STEP2, FLAN_T5_XXL_CURICULLUM_STEP3, META_LLAMA_8B_CURICULLUM_STEP2, META_LLAMA_8B_CURICULLUM_STEP3, MISTRAL_24B_CURICULLUM_STEP2, MISTRAL_24B_CURICULLUM_STEP3, OLMO_32B_CURICULLUM_STEP2, OLMO_32B_CURICULLUM_STEP3]:
-        next_version = ft_setting.rsplit("_", 1)[0] + f"_{int(ft_setting.split("_")[-1]) + 1}"
+        next_version = ft_setting.rsplit("_", 1)[0] + f"_{int(ft_setting.split('_')[-1]) + 1}"
         output_model_path = os.path.join(os.getenv("HF_HOME"), extract_base_model(model_name), next_version)
         output_dir = os.path.join(os.getenv("HF_HOME"), extract_base_model(model_name), "temp", next_version )
 
