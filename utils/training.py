@@ -305,7 +305,7 @@ def train(model, model_name: str, ft_setting: FT_SETTINGS_TYPE, train_dataset, v
         output_model_path = os.path.join(os.getenv("HF_HOME"), model_name, ft_setting)
         output_dir = os.path.join(os.getenv("HF_HOME"), model_name, "temp", ft_setting)
 
-    trainer = get_trainer_for_model(model, model_name, ft_setting, train_dataset, val_dataset, output_dir, output_model_path)
+    trainer = get_trainer_for_model(model, model_name, ft_setting, train_dataset, val_dataset, output_dir)
     trainer.train()
     trainer.save_model(output_model_path)
 
