@@ -21,7 +21,7 @@ class BestModelTracker(TrainerCallback):
 best_model_tracker = BestModelTracker()
 
 
-def get_trainer_for_model(model, model_name: str, ft_setting: FT_SETTINGS_TYPE, train_dataset: Dataset, val_dataset: Dataset, output_dir: str) -> Any:
+def get_trainer_for_model(model, model_name: str, train_dataset: Dataset, val_dataset: Dataset, output_dir: str) -> Any:
     """Set up the Trainer with early stopping and best model tracking."""
 
     if extract_base_model(model_name) == T5_BASE:
@@ -288,9 +288,6 @@ def get_trainer_for_model(model, model_name: str, ft_setting: FT_SETTINGS_TYPE, 
         return trainer
     
 
-
-
-
 def train(model, model_name: str, ft_setting: FT_SETTINGS_TYPE, train_dataset, val_dataset):
     """Train the model with early stopping and best model tracking."""
 
@@ -305,7 +302,7 @@ def train(model, model_name: str, ft_setting: FT_SETTINGS_TYPE, train_dataset, v
         output_model_path = os.path.join(os.getenv("HF_HOME"), model_name, ft_setting)
         output_dir = os.path.join(os.getenv("HF_HOME"), model_name, "temp", ft_setting)
 
-    trainer = get_trainer_for_model(model, model_name, ft_setting, train_dataset, val_dataset, output_dir)
+    trainer = get_trainer_for_model(model, model_name, train_dataset, val_dataset, output_dir)
     trainer.train()
     trainer.save_model(output_model_path)
 

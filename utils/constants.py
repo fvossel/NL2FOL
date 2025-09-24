@@ -1,6 +1,6 @@
 import torch
 import os
-from typing import Literal, Any
+from typing import Literal
 from enum import Enum
 
 
@@ -11,17 +11,29 @@ class FT_SETTINGS(str, Enum):
     gt_predicates_noise = "gt_predicates_noise"
     multilingual = "multilingual"
     step_1 = "2step_1"
-    step_2 = "2step_2"
     curiculum_step1 = "curiculum_step1"
     curiculum_step2 = "curiculum_step2"
     curiculum_step3 = "curiculum_step3"
 
-# Typalias für statische Typchecker
 FT_SETTINGS_TYPE = Literal[
     "standard", "new_tokens", "gt_predicates", "gt_predicates_noise",
-    "multilingual", "2step_1", "2step_2",
+    "multilingual", "2step",
     "curiculum_step1", "curiculum_step2", "curiculum_step3"
 ]
+
+
+class GENERATTION_SETTINGS(str, Enum):
+    standard = "standard"
+    new_tokens = "new_tokens"
+    gt_predicates = "gt_predicates"
+    gt_predicates_noise = "gt_predicates_noise"
+    predicates_only = "predicates_only"
+    folio = "folio"
+
+GENERATTION_SETTINGS_TYPE = Literal[
+    "standard", "new_tokens", "gt_predicates", "gt_predicates_noise", "predicates_only", "folio"
+]
+
 TORCH_DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 FOL_LITERALS = ['∀', '∃', '∧', '⊕', '∨', '→', '↔', '¬']
 FOL_TOKENS = ['FORALL', 'EXISTS', 'AND', 'XOR', 'OR', 'IMPLIES', 'IFF', 'NOT']

@@ -1,6 +1,6 @@
 import os
 from transformers import T5Tokenizer, T5ForConditionalGeneration, AutoModelForCausalLM, AutoTokenizer
-from utils.constants import FT_SETTINGS, FT_SETTINGS_TYPE, TORCH_DEVICE, FOL_LITERALS, T5_BASE, T5_BASE_CURICULLUM_STEP2, T5_BASE_CURICULLUM_STEP3, T5_3B, T5_3B_CURICULLUM_STEP2, T5_3B_CURICULLUM_STEP3, FLAN_T5_XXL, FLAN_T5_XXL_CURICULLUM_STEP2, FLAN_T5_XXL_CURICULLUM_STEP3, META_LLAMA_8B, META_LLAMA_8B_CURICULLUM_STEP2, META_LLAMA_8B_CURICULLUM_STEP3, MISTRAL_24B, MISTRAL_24B_CURICULLUM_STEP2, MISTRAL_24B_CURICULLUM_STEP3, OLMO_32B, OLMO_32B_CURICULLUM_STEP2, OLMO_32B_CURICULLUM_STEP3
+from utils.constants import FT_SETTINGS, GENERATTION_SETTINGS, FT_SETTINGS_TYPE, GENERATTION_SETTINGS_TYPE, TORCH_DEVICE, FOL_LITERALS, T5_BASE, T5_BASE_CURICULLUM_STEP2, T5_BASE_CURICULLUM_STEP3, T5_3B, T5_3B_CURICULLUM_STEP2, T5_3B_CURICULLUM_STEP3, FLAN_T5_XXL, FLAN_T5_XXL_CURICULLUM_STEP2, FLAN_T5_XXL_CURICULLUM_STEP3, META_LLAMA_8B, META_LLAMA_8B_CURICULLUM_STEP2, META_LLAMA_8B_CURICULLUM_STEP3, MISTRAL_24B, MISTRAL_24B_CURICULLUM_STEP2, MISTRAL_24B_CURICULLUM_STEP3, OLMO_32B, OLMO_32B_CURICULLUM_STEP2, OLMO_32B_CURICULLUM_STEP3
 from typing import Any
 from torch import bfloat16
 from pathlib import Path
@@ -20,6 +20,83 @@ def extract_base_model(path: str) -> str:
         return str(path.relative_to(hf_home).parent)
     except ValueError:
         return str(path)
+    
+def initialize_model_and_tokenizer_for_generation(model_name: str) -> tuple[Any, Any]:
+    """Initialize the model and tokenizer for generation"""
+
+    if extract_base_model(model_name) in [T5_BASE, T5_3B]:
+        model = T5ForConditionalGeneration.from_pretrained(model_name).to(TORCH_DEVICE)
+        tokenizer = T5Tokenizer.from_pretrained(model_name)
+        return model, tokenizer
+    elif extract_base_model(model_name) in [FLAN_T5_XXL]:
+        if FT_SETTINGS.new_tokens in model_name:
+            base_model_path = os.path.join(os.getenv("HF_HOME"), extract_base_model(model_name), "base_model_with_embeddings")
+            tokenizer = T5Tokenizer.from_pretrained(
+                base_model_path, trust_remote_code=True
+            )
+            base_model = T5ForConditionalGeneration.from_pretrained(base_model_path, device_map="auto", torch_dtype=bfloat16)
+            model = PeftModel.from_pretrained(
+                base_model,
+                model_name,
+                device_map="auto"
+            )
+
+            model = model.merge_and_unload()
+            return model, tokenizer
+        else:
+            base_model = T5ForConditionalGeneration.from_pretrained(extract_base_model(model_name), device_map="auto", torch_dtype=bfloat16)
+            tokenizer = T5Tokenizer.from_pretrained(extract_base_model(model_name))
+            model = PeftModel.from_pretrained(
+                base_model, model_name, device_map="auto"
+            )
+            
+            return model, tokenizer
+    elif extract_base_model(model_name) in [META_LLAMA_8B, MISTRAL_24B, OLMO_32B]:
+        if FT_SETTINGS.new_tokens in model_name:
+            base_model_path = os.path.join(os.getenv("HF_HOME"), extract_base_model(model_name), "base_model_with_embeddings")
+            tokenizer = AutoTokenizer.from_pretrained(
+                base_model_path, trust_remote_code=True
+            )
+            if (tokenizer.pad_token is None):
+                tokenizer.pad_token = tokenizer.eos_token  
+                
+            base_model = AutoModelForCausalLM.from_pretrained(
+                base_model_path,
+                use_cache=True,
+                device_map="auto",  
+                trust_remote_code=True, 
+                torch_dtype=bfloat16,
+            )
+            model = PeftModel.from_pretrained(
+                base_model,
+                model_name,
+                device_map="auto"
+            )
+            return model, tokenizer
+        else:
+            base_model_path = extract_base_model(model_name)
+            tokenizer = AutoTokenizer.from_pretrained(
+                base_model_path, trust_remote_code=True
+            )
+            if (tokenizer.pad_token is None):
+                tokenizer.pad_token = tokenizer.eos_token  
+                
+            base_model = AutoModelForCausalLM.from_pretrained(
+                base_model_path,
+                use_cache=True,
+                device_map="auto",  
+                trust_remote_code=True, 
+                torch_dtype=bfloat16,
+            )
+            model = PeftModel.from_pretrained(
+                base_model,
+                model_name,
+                device_map="auto"
+            )
+            return model, tokenizer
+    else:
+        raise ValueError(f"Unsupported model name: {model_name}")
+
 
 def initialize_model_and_tokenizer_for_training(model_name: str, ft_setting: FT_SETTINGS_TYPE) -> tuple[Any, Any]:
     """Initialize the model and tokenizer based on the specified fine-tuning settings."""
