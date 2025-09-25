@@ -16,7 +16,7 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Training Script for NL2FOL")
-    parser.add_argument('--model_name', type=str, required=True, help='Name of the pre-trained model')
-    parser.add_argument('--ft_setting', type=str, required=True, help='Fine-tuning setting')
+    parser.add_argument("--model_name", type=str, required=True, help="Name of the pre-trained model")
+    parser.add_argument("--ft_setting", type=str, required=True, help="Fine-tuning setting")
     args = parser.parse_args()
     main(args)

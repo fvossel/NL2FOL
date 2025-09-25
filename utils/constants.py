@@ -28,10 +28,9 @@ class GENERATTION_SETTINGS(str, Enum):
     gt_predicates = "gt_predicates"
     gt_predicates_noise = "gt_predicates_noise"
     predicates_only = "predicates_only"
-    folio = "folio"
 
 GENERATTION_SETTINGS_TYPE = Literal[
-    "standard", "new_tokens", "gt_predicates", "gt_predicates_noise", "predicates_only", "folio"
+    "standard", "new_tokens", "gt_predicates", "gt_predicates_noise", "predicates_only"
 ]
 
 TORCH_DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
