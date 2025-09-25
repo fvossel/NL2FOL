@@ -1,7 +1,3 @@
-import os
-os.environ["HF_HOME"] = "<Directory for Model Cache>"
-os.environ["TMPDIR"] = "<Directory for Temp Files>"
-os.environ["TOKENIZERS_PARALLELISM"] = "false"
 import argparse
 from utils.modelloader import initialize_model_and_tokenizer_for_training
 from utils.datasetloader import load_datasets_for_training
