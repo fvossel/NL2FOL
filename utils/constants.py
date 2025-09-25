@@ -73,3 +73,51 @@ LR_SCHEDULER_TYPE = "cosine"
 WARMUP_RATIO = 0.05  # Alternative to WARMUP_STEPS; only one should be used
 DDP_FIND_UNUSED_PARAMETERS = False
 DDP_BACKEND = "nccl"
+
+CFG_FOL = """
+%import common.WS
+%import common.UNICODE_LETTER
+%import common.UNICODE_DIGIT
+%ignore WS
+
+VARIABLE: /[a-z]/
+QUANTIFIER: "∀" | "∃"
+CONSTANT: /(?![a-z]$)[^\\s,)]+/
+NAME: /\\w{2,}/
+
+?start: expr
+
+?expr: implies
+
+?implies: iff
+       | iff "→" implies -> implies
+
+?iff: xor
+    | xor "↔" iff -> iff
+
+?xor: and_
+    | and_ "⊕" xor -> xor
+
+?and_: or_
+     | or_ "∧" and_ -> and_
+
+?or_: not_
+    | not_ "∨" or_ -> or_
+
+?not_: atom
+     | "¬" not_ -> not_
+
+?atom: "(" expr ")"
+     | predicate
+     | constant
+     | variable
+     | quantified
+
+quantified: QUANTIFIER variable expr -> quantified
+
+predicate: NAME "(" [args] ")" -> predicate
+args: expr ("," expr)*          -> args
+
+constant: CONSTANT          -> constant
+variable: VARIABLE          -> variable
+"""
