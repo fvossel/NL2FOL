@@ -94,14 +94,13 @@ def prepare_data(example: dict, model_name: str, setting: FT_SETTINGS_TYPE | GEN
             )
     
 def tokenize_data(dataset: Dataset, tokenizer: Any, setting: FT_SETTINGS_TYPE | GENERATTION_SETTINGS_TYPE) -> Dataset:
-    """Tokenisiert die Daten."""
+    """Tokenize the data"""
     def tokenize_function(examples):
         model_inputs = tokenizer(examples['NL'], padding='max_length', truncation=True, max_length=512)
         labels = tokenizer(examples['FOL'] if setting != FT_SETTINGS.step_1 and setting != GENERATTION_SETTINGS.predicates_only else examples["PREDICATES"], padding='max_length', truncation=True, max_length=512)
         model_inputs['labels'] = labels['input_ids']
         return model_inputs
     
-    # Wende die Tokenisierung auf das Dataset an
     tokenized_dataset = dataset.map(tokenize_function, batched=True)
     tokenized_dataset.set_format(type='torch', columns=['input_ids', 'attention_mask', 'labels'])
     return tokenized_dataset
@@ -134,6 +133,7 @@ def load_datasets_for_training(model_name: str, ft_setting: FT_SETTINGS_TYPE, to
 def load_dataset_for_generation(model_name: str, generation_setting: GENERATTION_SETTINGS_TYPE, tokenizer: Any) -> Dataset:
     """Load the test dataset for generation."""
     test_dataset = load_json_dataset("datasets/test.json")
+
     test_dataset = test_dataset.map(
         lambda x: prepare_data(x, model_name, generation_setting, test_dataset, tokenizer, False),  
         remove_columns=["NL", "FOL"] if model_name in [META_LLAMA_8B, META_LLAMA_8B_CURICULLUM_STEP2, META_LLAMA_8B_CURICULLUM_STEP3, MISTRAL_24B, MISTRAL_24B_CURICULLUM_STEP2, MISTRAL_24B_CURICULLUM_STEP3, OLMO_32B, OLMO_32B_CURICULLUM_STEP2, OLMO_32B_CURICULLUM_STEP3] else None, 
