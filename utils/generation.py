@@ -27,7 +27,6 @@ def generate(model: Any, model_name: str, tokenizer: Any, dataset: Dataset, gene
             start_idx = batch_idx * batch_size
             end_idx = min((batch_idx + 1) * batch_size, total_predictions)
             
-            # Batch-Verarbeitung der Eingaben
             batch_input_ids = stack([
                 dataset[i]["input_ids"] 
                 for i in range(start_idx, end_idx)
@@ -53,18 +52,17 @@ def generate(model: Any, model_name: str, tokenizer: Any, dataset: Dataset, gene
             predictions = tokenizer.batch_decode(outputs, skip_special_tokens=True)
             ground_truths = tokenizer.batch_decode(batch_labels, skip_special_tokens=True)
 
-            # Speichere die Ergebnisse für den Batch
             for nl, pred, truth in zip(sentences, predictions, ground_truths):
                 results.append({
                     "NL": nl,
                     "PRED": pred,
                     "GROUND-TRUTH": truth,
                 })
-            
-            if (batch_idx + 1) % 5 == 0:  
-                save_results_to_file(results, model_name, generation_setting)
+             
+            save_results_to_file(results, model_name, generation_setting)
 
         save_results_to_file(results, model_name, generation_setting)
+        
     elif extract_base_model(model_name) in [META_LLAMA_8B, MISTRAL_24B, OLMO_32B]:
         for i in tqdm(range(0, len(dataset), batch_size)):
             batch_data = dataset[i : i + batch_size]
