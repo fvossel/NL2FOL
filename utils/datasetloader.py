@@ -16,7 +16,7 @@ def load_json_dataset(file_path: str) -> Dataset:
 def prepare_data(example: dict, model_name: str, setting: FT_SETTINGS_TYPE | GENERATTION_SETTINGS_TYPE, dataset: Dataset, tokenizer: Any, train: bool=True) -> dict:
     """Prepares an input example for training."""
 
-    if model_name in [T5_BASE, T5_BASE_CURICULLUM_STEP2, T5_BASE_CURICULLUM_STEP3, T5_3B, T5_3B_CURICULLUM_STEP2, T5_3B_CURICULLUM_STEP3, FLAN_T5_XXL, FLAN_T5_XXL_CURICULLUM_STEP2, FLAN_T5_XXL_CURICULLUM_STEP3]:
+    if extract_base_model(model_name) in [T5_BASE, T5_3B, FLAN_T5_XXL]:
         if setting != FT_SETTINGS.new_tokens and setting != GENERATTION_SETTINGS.new_tokens:
             for old, new in zip(FOL_LITERALS, FOL_TOKENS):
                 example["FOL"] = example["FOL"].replace(old, new)
@@ -47,7 +47,7 @@ def prepare_data(example: dict, model_name: str, setting: FT_SETTINGS_TYPE | GEN
             'NL': task_prefix + example['NL'],
             **label
         }
-    elif model_name in [META_LLAMA_8B, META_LLAMA_8B_CURICULLUM_STEP2, META_LLAMA_8B_CURICULLUM_STEP3, MISTRAL_24B, MISTRAL_24B_CURICULLUM_STEP2, MISTRAL_24B_CURICULLUM_STEP3, OLMO_32B, OLMO_32B_CURICULLUM_STEP2, OLMO_32B_CURICULLUM_STEP3]:
+    elif extract_base_model(model_name) in [META_LLAMA_8B, MISTRAL_24B, OLMO_32B]:
         system_prompt = ""
         label = f"𝜙={example['FOL']}"
 
@@ -114,17 +114,17 @@ def load_datasets_for_training(model_name: str, ft_setting: FT_SETTINGS_TYPE, to
 
     train_dataset = train_dataset.map(
     lambda x: prepare_data(x, model_name, ft_setting, train_dataset, tokenizer),
-    remove_columns=["NL", "FOL"] if model_name in [META_LLAMA_8B, META_LLAMA_8B_CURICULLUM_STEP2, META_LLAMA_8B_CURICULLUM_STEP3, MISTRAL_24B, MISTRAL_24B_CURICULLUM_STEP2, MISTRAL_24B_CURICULLUM_STEP3, OLMO_32B, OLMO_32B_CURICULLUM_STEP2, OLMO_32B_CURICULLUM_STEP3] else None, 
+    remove_columns=["NL", "FOL"] if extract_base_model(model_name) in [META_LLAMA_8B, MISTRAL_24B, OLMO_32B] else None, 
     batched=False
     )
 
     val_dataset = val_dataset.map(
         lambda x: prepare_data(x, model_name, ft_setting, val_dataset, tokenizer),  
-        remove_columns=["NL", "FOL"] if model_name in [META_LLAMA_8B, META_LLAMA_8B_CURICULLUM_STEP2, META_LLAMA_8B_CURICULLUM_STEP3, MISTRAL_24B, MISTRAL_24B_CURICULLUM_STEP2, MISTRAL_24B_CURICULLUM_STEP3, OLMO_32B, OLMO_32B_CURICULLUM_STEP2, OLMO_32B_CURICULLUM_STEP3] else None, 
+        remove_columns=["NL", "FOL"] if extract_base_model(model_name) in [META_LLAMA_8B, MISTRAL_24B, OLMO_32B] else None, 
         batched=False
     )
 
-    if model_name in [T5_BASE, T5_BASE_CURICULLUM_STEP2, T5_BASE_CURICULLUM_STEP3, T5_3B, T5_3B_CURICULLUM_STEP2, T5_3B_CURICULLUM_STEP3, FLAN_T5_XXL, FLAN_T5_XXL_CURICULLUM_STEP2, FLAN_T5_XXL_CURICULLUM_STEP3]:
+    if extract_base_model(model_name) in [T5_BASE, T5_3B, FLAN_T5_XXL]:
         train_dataset = tokenize_data(train_dataset, tokenizer, ft_setting)
         val_dataset = tokenize_data(val_dataset, tokenizer, ft_setting)
 
@@ -136,7 +136,7 @@ def load_dataset_for_generation(model_name: str, generation_setting: GENERATTION
 
     test_dataset = test_dataset.map(
         lambda x: prepare_data(x, model_name, generation_setting, test_dataset, tokenizer, False),  
-        remove_columns=["NL", "FOL"] if model_name in [META_LLAMA_8B, META_LLAMA_8B_CURICULLUM_STEP2, META_LLAMA_8B_CURICULLUM_STEP3, MISTRAL_24B, MISTRAL_24B_CURICULLUM_STEP2, MISTRAL_24B_CURICULLUM_STEP3, OLMO_32B, OLMO_32B_CURICULLUM_STEP2, OLMO_32B_CURICULLUM_STEP3] else None, 
+        remove_columns=["NL", "FOL"] if extract_base_model(model_name) in [META_LLAMA_8B, MISTRAL_24B, OLMO_32B] else None, 
         batched=False
     )
     if extract_base_model(model_name) in [T5_BASE, T5_3B, FLAN_T5_XXL]:
