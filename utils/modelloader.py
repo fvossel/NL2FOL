@@ -26,7 +26,7 @@ def initialize_model_and_tokenizer_for_generation(model_name: str) -> tuple[Any,
 
     if extract_base_model(model_name) in [T5_BASE, T5_3B]:
         model = T5ForConditionalGeneration.from_pretrained(model_name).to(TORCH_DEVICE)
-        tokenizer = T5Tokenizer.from_pretrained(model_name)
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
         return model, tokenizer
     elif extract_base_model(model_name) in [FLAN_T5_XXL]:
         if FT_SETTINGS.new_tokens in model_name:
