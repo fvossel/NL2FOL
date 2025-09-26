@@ -35,7 +35,10 @@ Testing the fine-tuned model:
 ```bash
 python generate.py --model_name "${HF_HOME}/google-t5/t5-base/standard" --generation_setting "standard" --batch_size=32
 ```
-
+For bigger models that require multiple GPUs use torchrun:
+```bash
+torchrun --nproc_per_node=2 train.py --model_name "mistralai/Mistral-Small-24B-Instruct-2501" --ft_setting "standard"
+```
 
 ## Citation
 
