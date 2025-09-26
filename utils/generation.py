@@ -10,7 +10,7 @@ from pathvalidate import sanitize_filename
 
 def save_results_to_file(results: list, model_name: str, generation_setting: GENERATTION_SETTINGS_TYPE):
     """Saves the generation results to a text file."""
-    output_file = f"results/{sanitize_filename(model_name)}_{generation_setting}.json"
+    output_file = f"results/{sanitize_filename(extract_base_model(model_name))}_{generation_setting}.json"
     with open(output_file, "w", encoding="utf-8") as f:
         dump(results, f, indent=4, ensure_ascii=False)
 
