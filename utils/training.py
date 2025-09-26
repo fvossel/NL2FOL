@@ -288,7 +288,7 @@ def get_trainer_for_model(model, model_name: str, train_dataset: Dataset, val_da
         return trainer
     
 
-def train(model, model_name: str, ft_setting: FT_SETTINGS_TYPE, train_dataset, val_dataset):
+def train(model: Any, tokenizer: Any, model_name: str, ft_setting: FT_SETTINGS_TYPE, train_dataset, val_dataset):
     """Train the model with early stopping and best model tracking."""
 
     output_dir = ""
@@ -305,6 +305,7 @@ def train(model, model_name: str, ft_setting: FT_SETTINGS_TYPE, train_dataset, v
     trainer = get_trainer_for_model(model, model_name, train_dataset, val_dataset, output_dir)
     trainer.train()
     trainer.save_model(output_model_path)
+    tokenizer.save_pretrained(output_model_path)
 
 
     
