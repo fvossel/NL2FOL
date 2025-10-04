@@ -45,12 +45,14 @@ torchrun --nproc_per_node=2 train.py --model_name "mistralai/Mistral-Small-24B-I
 If you use this code for scientific purposes, **please cite the following paper**:
 
 ```
-@inproceedings{your-paper-citation,
-  author = {Your Name},
-  title = {Your Paper Title},
-  booktitle = {Conference/Journal Name},
-  year = {2024},
-  ...
+@misc{vossel2025advancingnaturallanguageformalization,
+      title={Advancing Natural Language Formalization to First Order Logic with Fine-tuned LLMs}, 
+      author={Felix Vossel and Till Mossakowski and Björn Gehrke},
+      year={2025},
+      eprint={2509.22338},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2509.22338}, 
 }
 ```
 
