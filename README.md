@@ -55,7 +55,3 @@ If you use this code for scientific purposes, **please cite the following paper*
       url={https://arxiv.org/abs/2509.22338}, 
 }
 ```
-
----
-
-Let me know if you want to add more sections (usage/examples/contributing/etc.) or if you have the citation details!
