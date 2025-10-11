@@ -8,7 +8,6 @@ If you use these datasets, please make sure to cite the respective works.
 
 ---
 
-Das kannst du direkt im README verwenden. Die Links und BibTeX-Einträge funktionieren im Markdown. Wenn du noch Anpassungen möchtest, sag gerne Bescheid!
 ## Getting Started
 
 To get a local copy of the project up and running, execute the following commands in your terminal:
