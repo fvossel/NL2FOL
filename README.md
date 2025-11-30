@@ -54,3 +54,6 @@ If you use this code for scientific purposes, **please cite the following paper*
       url={https://arxiv.org/abs/2509.22338}, 
 }
 ```
+
+## Demo
+A demo of our T5-3b model can be tested here: https://translate.hyai.cs.uos.de
