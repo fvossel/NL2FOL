@@ -59,7 +59,7 @@ trl==0.23.0
 typing-inspection==0.4.1
 typing_extensions==4.15.0
 tzdata==2025.2
-urllib3==2.5.0
+urllib3==2.6.0
 xxhash==3.5.0
 yarl==1.20.1
 z3-solver==4.15.3.0
